@@ -1,4 +1,4 @@
-# Dockerfile for D6+D20 bot (fixed)
+# Minimal Dockerfile for D6/D20 bot
 FROM python:3.12-slim
 
 WORKDIR /app
