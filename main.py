@@ -12,13 +12,12 @@ from telegram.ext import (
     filters,
 )
 
-# --- Logging (visible in Railway Logs) ---
+# Логи видны в Railway → Logs
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("d6-d20-bot")
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # set in Railway Variables
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # задай в Railway Variables
 
-# --- Commands ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         "Привет! Я D6-bot (+ D20).\n"
@@ -27,14 +26,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 async def roll_d6(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    result = random.randint(1, 6)
-    await update.message.reply_text(f"🎲 (D6) Выпало: {result}")
+    await update.message.reply_text(f"🎲 (D6) Выпало: {random.randint(1, 6)}")
 
 async def roll_d20(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    result = random.randint(1, 20)
-    await update.message.reply_text(f"🎲 (D20) Выпало: {result}")
+    await update.message.reply_text(f"🎲 (D20) Выпало: {random.randint(1, 20)}")
 
-# --- Text triggers (ловим д6/d6/д20/d20 и даже с ведущим / как текст) ---
+# ловим д6/d6/д20/d20 и даже /д6 как обычный текст (если privacy отключен)
 DICE_REGEX = re.compile(r"^\s*[\/]?(?:д6|d6|д20|d20)\s*$", re.IGNORECASE)
 
 async def on_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -49,7 +46,6 @@ async def on_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await roll_d6(update, context)
 
 async def post_init(app: Application) -> None:
-    # Register bot commands (only latin commands are valid in Telegram)
     await app.bot.set_my_commands([
         ("d6", "Бросить шестигранный кубик"),
         ("d20", "Бросить двадцатигранный кубик"),
@@ -69,15 +65,11 @@ def main() -> None:
         .build()
     )
 
-    # Commands (only latin command names are allowed)
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("d6", roll_d6))
     app.add_handler(CommandHandler("d20", roll_d20))
-
-    # Text triggers (для 'д6' и 'д20' без слеша, если privacy отключен)
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_text))
 
-    # Long polling
     app.run_polling(allowed_updates=["message", "edited_message", "callback_query"])
 
 if __name__ == "__main__":
