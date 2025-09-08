@@ -9,7 +9,6 @@ from telegram.ext import (
     ContextTypes,
     MessageHandler,
     AIORateLimiter,
-    defaults,
     filters,
 )
 
@@ -67,7 +66,6 @@ def main() -> None:
         .token(TOKEN)
         .post_init(post_init)
         .rate_limiter(AIORateLimiter())
-        .defaults(defaults.Defaults(block=False))
         .build()
     )
 

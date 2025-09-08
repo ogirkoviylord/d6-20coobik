@@ -1,4 +1,4 @@
-# Dockerfile for D6+D20 bot
+# Dockerfile for D6+D20 bot (fixed)
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -6,7 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --prefer-binary --upgrade pip \
+    && pip install --no-cache-dir --prefer-binary -r requirements.txt
 
 COPY main.py ./
 
